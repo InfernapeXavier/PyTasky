@@ -1,0 +1,64 @@
+version: "2.4"
+
+services:
+  mongo:
+    image: mongo:4.4.1
+    ports:
+      - 27888:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.1
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.2
+
+  server:
+    build: ./server
+    restart: always
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.10
+
+  client1:
+    build: ./client
+    depends_on:
+      - mongo
+      - rabbitmq
+    restart: always
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.11
+
+  client2:
+    build: ./client
+    depends_on:
+      - mongo
+      - rabbitmq
+    restart: always
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.12
+
+  client3:
+    build: ./client
+    depends_on:
+      - mongo
+      - rabbitmq
+    restart: always
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.13
+
+networks:
+  static-network:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
